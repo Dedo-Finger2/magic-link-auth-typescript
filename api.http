@@ -1,7 +1,7 @@
-POST http://localhost:333/api/login
+POST http://localhost:3333/api/login
 Content-Type: application/json
 
 {
-    "name": "Greg",
-    "email": "ajudaqajudo@gmail.com"
+    "name": "Greg2",
+    "email": "outro@gmail.com"
 }

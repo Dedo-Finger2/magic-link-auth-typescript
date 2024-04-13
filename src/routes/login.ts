@@ -13,14 +13,14 @@ export async function login(app: FastifyInstance) {
     const { name, email } = loginBodySchema.parse(request.body);
 
     try {
-      const user = await prisma.user.findUnique({
+      let user = await prisma.user.findUnique({
         where: {
           email,
         },
       });
 
       if (!user) {
-        const user = await prisma.user.create({
+        user = await prisma.user.create({
           data: {
             name,
             email,
@@ -29,9 +29,9 @@ export async function login(app: FastifyInstance) {
       }
 
       const token = app.jwt.sign(
-        { userId: user?.id },
+        { userId: user.id },
         {
-          expiresIn: "1h",
+          expiresIn: "1m",
         }
       );
 
@@ -45,7 +45,7 @@ export async function login(app: FastifyInstance) {
           address: "testing@myapp.com",
         },
         subject: "Your system's access.",
-        html: `<a href='${token}' target='_blank'>Finish Logging-in</a>`,
+        html: `<a href='http://localhost:3333/api/verify?token=${token}' target='_blank'>Finish Logging-in</a>`,
       });
 
       return reply
