@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ZodError, z } from "zod";
 import { prisma } from "./../config/prisma";
-import {} from "@fastify/jwt";
 
 type DecodedCode = {
   userId: string;
@@ -28,7 +27,15 @@ export async function verify(app: FastifyInstance) {
         return reply.status(400).send({ message: "Error." });
       }
 
-      return reply.status(200).send({ message: `Auth as ${user?.name}` });
+      reply.setCookie("userId", user.id, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 7 Days
+      });
+
+      return reply.status(200).send({
+        message: `Auth as ${user?.name}`,
+        authLink: "http://localhost:3333/api/home",
+      });
     } catch (error: unknown) {
       if (error instanceof ZodError) {
         return reply.status(401).send(error.message);
